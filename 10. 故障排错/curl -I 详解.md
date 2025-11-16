@@ -1,8 +1,7 @@
-下面给你一个**超详细、但非常实用的 `curl -I` 全面详解**，包含真实生产环境中的分析方法。
+# ** `curl -I` 全面详解**
+包含真实生产环境中的分析方法。
 
----
-
-# ✅ `curl -I` 是什么？
+#  `curl -I` 是什么？
 
 `curl -I`（大写 I）用于 **只获取 HTTP 响应头（HEAD 请求）**，不下载 body。
 非常适合：
@@ -14,7 +13,7 @@
 
 ---
 
-# 📌 基本用法
+#  基本用法
 
 ```bash
 curl -I http://example.com/api/test
@@ -22,7 +21,7 @@ curl -I http://example.com/api/test
 
 ---
 
-# ✔️ 输出示例（真实生产接口）
+#  输出示例（真实生产接口）
 
 假设你得到如下输出：
 
@@ -41,11 +40,11 @@ X-Request-Id: 79b1eac1f0f44
 
 ---
 
-# 🧠 `curl -I` 每个字段的深度解析（带生产场景）
+#  `curl -I` 每个字段的深度解析（带生产场景）
 
 ---
 
-## 1️⃣ `HTTP/1.1 200 OK`
+## 1️ `HTTP/1.1 200 OK`
 
 最关键的部分：**状态码**
 
@@ -63,12 +62,12 @@ X-Request-Id: 79b1eac1f0f44
 | **503**     | Service Unavailable | 服务未准备好 / 实例数不足               |
 | **504**     | Gateway Timeout     | 外部依赖超时，例如数据库/Redis           |
 
-📌 **如果返回 502/503，第一步应该检查 Pod 的健康检查与 readiness**
+ **如果返回 502/503，第一步应该检查 Pod 的健康检查与 readiness**
 K8s 中最常见问题。
 
 ---
 
-## 2️⃣ `Server: nginx/1.22.0`
+## 2️ `Server: nginx/1.22.0`
 
 服务器类型。
 
@@ -80,7 +79,7 @@ K8s 中最常见问题。
 * **traefik** → 容器网关
 * **openresty** → lua 网关
 
-📌 用途
+ 用途
 通过 `Server:` 可以判断问题是发生在 **应用层** 还是 **网关/Ingress 层**。
 
 示例：
@@ -94,7 +93,7 @@ HTTP/1.1 404 Not Found
 
 ---
 
-## 3️⃣ `Date: Fri, 14 Nov 2025 02:11:32 GMT`
+## 3️ `Date: Fri, 14 Nov 2025 02:11:32 GMT`
 
 判断三件事：
 
@@ -112,7 +111,7 @@ HTTP/1.1 404 Not Found
 
 ---
 
-## 4️⃣ `Content-Type: application/json`
+## 4️ `Content-Type: application/json`
 
 确定返回格式。
 
@@ -124,7 +123,7 @@ HTTP/1.1 404 Not Found
 
 ---
 
-## 5️⃣ `Content-Length: 123`
+## 5️ `Content-Length: 123`
 
 代表 Body 大小。
 
@@ -137,7 +136,7 @@ HTTP/1.1 404 Not Found
 
 ---
 
-## 6️⃣ `Connection: keep-alive`
+## 6️ `Connection: keep-alive`
 
 是否启用长连接。
 
@@ -148,7 +147,7 @@ HTTP/1.1 404 Not Found
 
 ---
 
-## 7️⃣ `Cache-Control: no-cache`
+## 7️ `Cache-Control: no-cache`
 
 缓存策略。
 
@@ -159,7 +158,7 @@ HTTP/1.1 404 Not Found
 
 ---
 
-## 8️⃣ `X-Request-Id: 1234567890ab`
+## 8️ `X-Request-Id: 1234567890ab`
 
 链路追踪最关键的字段之一。
 
@@ -170,9 +169,9 @@ HTTP/1.1 404 Not Found
 
 ---
 
-# 📌 真实生产环境中的排查示例
+#  真实生产环境中的排查示例
 
-## 🔥 场景 1：curl -I 返回 502，但应用正常
+##  场景 1：curl -I 返回 502，但应用正常
 
 ```
 HTTP/1.1 502 Bad Gateway
@@ -190,7 +189,7 @@ Server: nginx
 
 ---
 
-## 🔥 场景 2：curl -I 返回 200，但业务报错
+##  场景 2：curl -I 返回 200，但业务报错
 
 说明：
 
@@ -213,7 +212,7 @@ curl -v http://service/api
 
 ---
 
-## 🔥 场景 3：curl -I 非常慢，但状态码正常
+##  场景 3：curl -I 非常慢，但状态码正常
 
 ```
 real time: 5s
@@ -233,7 +232,7 @@ curl -I -w "dns: %{time_namelookup} connect: %{time_connect} total: %{time_total
 
 ---
 
-# 🎯 总结（面试级、生产级理解）
+#  总结（面试级、生产级理解）
 
 `curl -I` 是最轻量、最快速的 API 连通性验证手段，它可以帮你快速判断：
 
